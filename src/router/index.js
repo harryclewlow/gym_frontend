@@ -1,24 +1,43 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
+import MemberForm from "../components/MemberForm";
+import Error from "../components/Error";
+import PaymentGateway from "../components/PaymentGateway";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home
+    name: "MemberForm",
+    component: MemberForm
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
+    path: "/error",
+    name: "ErrorPage",
+    component: Error,
+    props: true
+  },
+  {
+    path: "/payment",
+    name: "PaymentGateway",
+    component: PaymentGateway,
+    props: true,
+    beforeEnter: (to, from, next) => {
+      if (to.params.membership) {
+        next(); // <-- everything good, proceed
+      } else {
+        next({ name: 'MemberForm' }); // <-- redirect to setup
+      }
+    }
+  },
+  {
+    path: "*",
+    name: "NotFound",
+    component: Error,
+    props: { errorCode: "404" }
   }
+
 ];
 
 const router = new VueRouter({
